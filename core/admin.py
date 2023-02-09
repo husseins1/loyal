@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import reverse_lazy
-from core.models import costumer,Group
+from core.models import costumer,Group,OrderItem,Order
 from django.utils.html import format_html
 # Register your models here.
 
@@ -20,8 +20,20 @@ class MyUserAdmin(admin.ModelAdmin):
 
 admin.site.register(costumer, MyUserAdmin)
 
-class GroupAdmin(admin.ModelAdmin):
-    list_display = ['type']
+class GroupCore(admin.ModelAdmin):
+    
     pass
 
-admin.site.register(Group,GroupAdmin)
+admin.site.register(Group,GroupCore)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('product','total')
+    pass
+    
+
+
+admin.site.register(OrderItem,OrderItemAdmin)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('customer','total')
+    pass
+
+admin.site.register(Order,OrderAdmin)
