@@ -7,6 +7,8 @@ from decimal import Decimal
 class Person(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    middle = models.CharField(max_length=30)
+
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
@@ -15,7 +17,7 @@ class costumer(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=50)
-    credit = models.CharField(max_length=50)
+    credit = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     identity = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     birthday = models.DateField()
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
@@ -38,11 +40,14 @@ class Order(models.Model):
 
     def _calculate_total(self):
         sumof = sum(item.total for item in self.items.all())
-        sumof = sumof*(100-self.customer.group.discount_percent)/100
+        self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
+        self.customer.save()
+        
         
 
         return sumof
 
+    
     total = property(_calculate_total)
 
     def save(self, *args, **kwargs):
@@ -50,7 +55,10 @@ class Order(models.Model):
         # # self.total = 10 - self.customer.credit
         # if self.customer.group:
         #     self.total = self.total*Decimal((100 - self.customer.group.discount_percent) / 100)
-        # self.customer.credit = str(self.total*10/100)
+        # self.customer.credit = ((self.total*self.customer.group.discount_percent/100) +(self.customer.credit))
+        # sumof = sum(item.total for item in self.items.all())
+        # self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
+        # self.customer.save()
         super().save(*args, **kwargs)
 
 

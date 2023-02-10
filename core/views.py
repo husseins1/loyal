@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from core.models import costumer
 from django.http import HttpResponseRedirect
-from twilio.rest import Client
+
 # Create your views here.
 def send(request,phone_number): 
     # account_sid = 'ACc27bb9e9b7a2007fd5e2f5b7116b5dad'
