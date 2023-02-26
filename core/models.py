@@ -3,6 +3,8 @@ import uuid
 # Create your models here.
 from django.db import models
 from decimal import Decimal
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
 class Person(models.Model):
     first_name = models.CharField(max_length=30)
@@ -40,8 +42,7 @@ class Order(models.Model):
 
     def _calculate_total(self):
         sumof = sum(item.total for item in self.items.all())
-        self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
-        self.customer.save()
+        
         
         
 
@@ -50,7 +51,8 @@ class Order(models.Model):
     
     total = property(_calculate_total)
 
-    def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
+        
         # print(self.items)
         # # self.total = 10 - self.customer.credit
         # if self.customer.group:
@@ -59,10 +61,23 @@ class Order(models.Model):
         # sumof = sum(item.total for item in self.items.all())
         # self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
         # self.customer.save()
-        super().save(*args, **kwargs)
+        # sumof = sum(item.total for item in self.items.all())
+        # self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
+        # self.customer.save()
+        # super().save(*args, **kwargs)
+    
+  
 
 
 class OrderItemRelation(models.Model):
     item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
+@receiver(post_save, sender=Order,dispatch_uid="update_stock_count")
+def update_customer_credit(sender, instance, **kwargs):
+    sumof = sum(instance.items.all()[0].price)
+    print(instance._calculate_total())
+    instance.customer.credit = Decimal(instance.customer.credit) + Decimal((sumof * instance.customer.group.discount_percent/100)) + sumof
+    instance.customer.save()
+    # instance.save()
