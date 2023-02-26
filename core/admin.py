@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import reverse_lazy
-from core.models import costumer,Group,OrderItem,Order
+from core.models import costumer,Group,Invoice,Order
 from django.utils.html import format_html
 # Register your models here.
 
@@ -25,13 +25,13 @@ class GroupCore(admin.ModelAdmin):
     pass
 
 admin.site.register(Group,GroupCore)
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('product','total')
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ('totalPrice','tableNumber')
     pass
     
 
 
-admin.site.register(OrderItem,OrderItemAdmin)
+admin.site.register(Invoice,InvoiceAdmin)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('customer','total')
     pass

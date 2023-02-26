@@ -22,33 +22,40 @@ class costumer(models.Model):
     birthday = models.DateField()
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
 
-class OrderItem(models.Model):
-    product = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField()
-    def _calculate_total(self):
-        return self.price * self.quantity
+# class OrderItem(models.Model):
+#     product = models.CharField(max_length=100)
+#     price = models.DecimalField(max_digits=10, decimal_places=2)
+#     quantity = models.PositiveIntegerField()
+#     def _calculate_total(self):
+#         return self.price * self.quantity
 
-    total = property(_calculate_total)
+#     total = property(_calculate_total)
+
+class Invoice(models.Model):
+    tableNumber = models.IntegerField()
+    totalPrice = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateTimeField(auto_now_add=True)
+    invoiceNumber = models.AutoField(primary_key=True)
 
 class Order(models.Model):
     customer = models.ForeignKey(costumer, on_delete=models.CASCADE)
-    items = models.ManyToManyField(OrderItem)
-    # total = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    
+    total = models.DecimalField(max_digits=10, decimal_places=2,null=True)
 
     date_placed = models.DateTimeField(auto_now_add=True)
 
-    def _calculate_total(self):
-        sumof = sum(item.total for item in self.items.all())
-        self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
-        self.customer.save()
+    # def _calculate_total(self):
+    #     sumof = sum(item.total for item in self.items.all())
+    #     self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
+    #     self.customer.save()
         
         
 
-        return sumof
+    #     return sumof
 
     
-    total = property(_calculate_total)
+    # total = property(_calculate_total)
 
     def save(self, *args, **kwargs):
         # print(self.items)
@@ -62,7 +69,7 @@ class Order(models.Model):
         super().save(*args, **kwargs)
 
 
-class OrderItemRelation(models.Model):
-    item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+# class OrderItemRelation(models.Model):
+#     item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+#     quantity = models.PositiveIntegerField(default=1)
