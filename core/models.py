@@ -36,12 +36,13 @@ class Invoice(models.Model):
     totalPrice = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(auto_now_add=True)
     invoiceNumber = models.AutoField(primary_key=True)
+    payWithCredit = models.BooleanField()
 
 class Order(models.Model):
     customer = models.ForeignKey(costumer, on_delete=models.CASCADE)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     
-    total = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2,null=True,editable=False)
 
     date_placed = models.DateTimeField(auto_now_add=True)
 
@@ -64,8 +65,11 @@ class Order(models.Model):
         #     self.total = self.total*Decimal((100 - self.customer.group.discount_percent) / 100)
         # self.customer.credit = ((self.total*self.customer.group.discount_percent/100) +(self.customer.credit))
         # sumof = sum(item.total for item in self.items.all())
-        # self.customer.credit = Decimal(self.customer.credit) + Decimal((sumof*self.customer.group.discount_percent/100))
-        # self.customer.save()
+        if self.invoice.payWithCredit and (self.invoice.totalPrice > self.customer.credit):
+            self.total = self.invoice.totalPrice - self.customer.credit
+
+        self.customer.credit = Decimal(self.customer.credit) + Decimal((self.invoice.totalPrice*self.customer.group.discount_percent/100))
+        self.customer.save()
         super().save(*args, **kwargs)
 
 

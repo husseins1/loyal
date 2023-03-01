@@ -6,6 +6,7 @@ from django.utils.html import format_html
 
 
 class MyUserAdmin(admin.ModelAdmin):
+    search_fields = ['first_name']
     list_display = ('first_name', 'last_name','phone_number','identity','credit','birthday','my_url_field','send')
 
     def my_url_field(self, obj):
