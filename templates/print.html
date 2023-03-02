@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    {% load static %}
+    
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.1/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="body">
+
+        <img id="logo" src={% static 'logo.jpg' %} alt="good">
+
+        <h1> السيد:{{custom.first_name}} {{custom.last_name}}</h1>
+        <h1>رقم البطاقة: {{custom.identity}}</h1>
+        <h1 class="name">B A Y T H A L A B</h1>
+        <footer>
+            <h1>لقمة هنيئة بطعمتنا الحلبية</h1>
+        </footer>
+    </div>
+    <button class="button">download</button>
+    <script defer>
+        const btn = document.querySelector('.button');
+        const div = document.querySelector('.body')
+        console.log(div.innerHTML)
+//         const doc = new jspdf.jsPDF();
+        
+//         btn.addEventListener('click',()=>{
+            
+//             doc.html(div.innerHTML, {
+//    callback: function (doc) {
+//      doc.save();
+//    },
+//    x: 10,
+//    y: 10
+// });
+//             // doc.save('a4.pdf')
+//         })
+
+    btn.addEventListener('click',()=>{
+        html2canvas(div).then(canvas => {
+  // Create a new PDF document
+  const pdf = new jspdf.jsPDF({
+  orientation: 'landscape',
+  unit: 'in',
+  format: [4, 7] // width, height
+});
+
+  // Add the canvas to the PDF document
+  const imgData = canvas.toDataURL('image/png');
+  pdf.addImage(imgData, 'PNG', 0, 0);
+
+  // Save the PDF document
+  pdf.save('myPDF.pdf');
+});
+    })
+    </script>
+</body>
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing: border-box;
+    }
+    .body{
+        background:#F3EFE4;
+        color:#42301C;
+        text-align:center;
+        width:500px;
+
+        height:360px;
+
+
+    }
+    #logo{
+        
+        margin: auto;
+
+        width:120px;
+    }
+    footer{
+        background:#42301C;
+        color:#F3EFE4;
+        padding:5px;
+    }
+    
+    h1{
+        font-weight: bold;
+        font-size:24px;
+    }
+    .button {
+        margin-top: 3rem;
+    }
+</style>
+</html>

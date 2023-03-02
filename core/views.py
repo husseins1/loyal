@@ -36,3 +36,8 @@ def send(request,phone_number):
     print(message.sid)
 
     return HttpResponseRedirect("/admin/core/costumer/")
+
+
+def print_id(request,id): 
+    custom=costumer.objects.get(identity=id)
+    return render(request, 'print.html', {'custom': custom})

@@ -65,8 +65,14 @@ class Order(models.Model):
         #     self.total = self.total*Decimal((100 - self.customer.group.discount_percent) / 100)
         # self.customer.credit = ((self.total*self.customer.group.discount_percent/100) +(self.customer.credit))
         # sumof = sum(item.total for item in self.items.all())
-        if self.invoice.payWithCredit and (self.invoice.totalPrice > self.customer.credit):
-            self.total = self.invoice.totalPrice - self.customer.credit
+        if self.invoice.payWithCredit:
+            if (self.invoice.totalPrice >= self.customer.credit):
+                self.total = self.invoice.totalPrice - self.customer.credit
+                self.customer.credit = 0
+            elif (self.invoice.totalPrice < self.customer.credit):
+                self.total = 0
+                self.customer.credit  = self.customer.credit - self.invoice.totalPrice
+
 
         self.customer.credit = Decimal(self.customer.credit) + Decimal((self.invoice.totalPrice*self.customer.group.discount_percent/100))
         self.customer.save()

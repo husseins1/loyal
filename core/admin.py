@@ -10,7 +10,7 @@ class MyUserAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name','phone_number','identity','credit','birthday','my_url_field','send')
 
     def my_url_field(self, obj):
-        return format_html(f'<a href="/" class="btn btn-primary">print</a>')
+        return format_html(f'<a href="{reverse_lazy("print id", kwargs={"id":obj.identity})}" class="btn btn-primary">print</a>')
     my_url_field.allow_tags = True
     my_url_field.short_description = 'actions'
     def send(self, obj):
