@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+var myData = {{ orders|safe }};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+    <div>
+  <canvas id="myChart"></canvas>
+  <label for="start_date">Start date:</label>
+<input type="date" id="start_date" name="start_date">
+
+<label for="end_date">End date:</label>
+<input type="date" id="end_date" name="end_date">
+<button  onClick="searchFilter()">Search</button>
+</div>
+</body>
+<script>
+    let objState;
+    // fetch('/core/orders').then(res=>res.json()).then(
+    //     data=>{
+    //         console.log(JSON.parse(data))
+    //     }
+    // )
+   const reqObj =  getLabels(myData);
+   objState = reqObj;
+    const ctx = document.getElementById('myChart');
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(reqObj),
+      datasets: [{
+        label: 'Uses',
+        data: Object.values(reqObj),
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  function searchFilter() {
+  const startDate = new Date(document.getElementById("start_date").value);
+  const endDate = new Date(document.getElementById("end_date").value);
+  const filteredArr = myData.filter(ele=>new Date(ele.date) > startDate && new Date(ele.date) < endDate);
+  const newSet = getLabels(filteredArr);
+  console.log(newSet)
+  updateChart(chart,objState,newSet);
+  objState = newSet;
+  
+ 
+}
+
+function getLabels(arr) {
+   return arr.reduce((acc, obj) => {
+    const table = 'Table N.' + obj.table;
+    acc[table] = (acc[table] || 0) + 1;
+    return acc;
+  }, {});
+}
+function updateChart(chart,oldObj,newObj){
+
+    Object.keys(oldObj).forEach(ele=>{
+        chart.data.labels.pop();
+        chart.data.datasets.forEach((dataset) => {
+        dataset.data.pop();
+    });
+})
+    chart.update();
+    Object.keys(newObj).forEach(ele=>{
+        chart.data.labels.push(ele);
+    //     chart.data.datasets.forEach((dataset) => {
+    //     dataset.data.push(newObj[ele]);
+    // });
+    chart.data.datasets[0].data.push(newObj[ele])
+    })
+    chart.update();
+   
+    // console.log(chart.data)
+}
+</script>
+</html>
