@@ -3,7 +3,7 @@ from . import views
 
 
 urlpatterns = [
-     path('send/<phone_number>/', views.send,name='send'),
+     path('history/<id>/', views.history,name='history'),
     path('print id/<id>/', views.print_id, name='print id'),
     path('analytics', views.analytics, name='analytics'),
     path('orders', views.getOrders, name='orders'),

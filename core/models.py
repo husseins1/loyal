@@ -35,7 +35,7 @@ class Invoice(models.Model):
     tableNumber = models.IntegerField()
     totalPrice = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(auto_now_add=True)
-    invoiceNumber = models.AutoField(primary_key=True)
+    invoiceNumber = models.IntegerField(primary_key=True,editable=True)
     payWithCredit = models.BooleanField()
 
 class Order(models.Model):

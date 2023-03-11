@@ -6,17 +6,18 @@ from django.utils.html import format_html
 
 
 class MyUserAdmin(admin.ModelAdmin):
-    search_fields = ['first_name']
-    list_display = ('first_name', 'last_name','phone_number','identity','credit','birthday','my_url_field','send')
+    search_fields = ['first_name','identity']
+    list_display = ('first_name', 'last_name','phone_number','identity','credit','birthday','my_url_field','history')
 
     def my_url_field(self, obj):
         return format_html(f'<a href="{reverse_lazy("print id", kwargs={"id":obj.identity})}" class="btn btn-primary">print</a>')
     my_url_field.allow_tags = True
     my_url_field.short_description = 'actions'
-    def send(self, obj):
-        return format_html(f'<a href="{reverse_lazy("send", kwargs={"phone_number":obj.phone_number})}" class="btn btn-primary">Send</a>')
-    send.allow_tags = True
-    send.short_description = 'actions'
+    def history(self, obj):
+        return format_html(f'<a href="{reverse_lazy("history", kwargs={"id":obj.identity})}" class="btn btn-primary">History</a>')
+    
+    
+    
 
 
 admin.site.register(costumer, MyUserAdmin)
